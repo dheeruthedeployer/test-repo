@@ -48,13 +48,12 @@ jobs:
         run: |
           date -u +%Y%m%d-T%H%M%S > TAG
           regula run  . | tee ./compliance-bootstrap-$(cat TAG).json
-          
+
       - name: Run Regula Compliance
         uses: fugue/regula-action@v3.2.1
         with:
           input_path: 0-bootstrap
           include: example_custom_rule
-        run: ls -lart
 
       - name: Trigger build
         run: |
