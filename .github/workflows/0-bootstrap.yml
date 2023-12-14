@@ -53,7 +53,8 @@ jobs:
         uses: fugue/regula-action@v3.2.1
         with:
           input_path: 4-projects
-
+      - run: |
+          ls -lart
       - name: Trigger build
         run: |
           cd ${{ github.workspace}}/build
