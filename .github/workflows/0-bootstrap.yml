@@ -48,22 +48,14 @@ jobs:
         run: |
           date -u +%Y%m%d-T%H%M%S > TAG
           regula run  . | tee ./compliance-bootstrap-$(cat TAG).json
+          
+      - name: Run Regula Compliance
+        uses: fugue/regula-action@v3.2.1
+        with:
+          input_path: 0-bootstrap
+          include: example_custom_rule
+        run: ls -lart
 
-      - name: Upload compliance report
-        run: |
-          jq .summary.rule_results.FAIL ./compliance-bootstrap-$(cat TAG).json > STATUS
-          if [ $(cat STATUS) == 0 ]; then
-                echo "-----------------------------------------------------------"
-                echo "The Terraform code is compliant with Compliance standards"
-                echo "-----------------------------------------------------------"
-                gsutil cp ./compliance-bootstrap-$(cat TAG).json gs://${{ env.BUCKET }}/tf-validator/compliance-bootstrap-$(cat TAG).json
-          else
-                echo "-----------------------------------------------------------"
-                echo "Please check terraform code fix the errors listed above."
-                echo "-----------------------------------------------------------"
-                gsutil cp ./compliance-bootstrap-$(cat TAG).json gs://${{ env.BUCKET }}/tf-validator/compliance-bootstrap-$(cat TAG).json
-                exit 1
-          fi
       - name: Trigger build
         run: |
           cd ${{ github.workspace}}/build
