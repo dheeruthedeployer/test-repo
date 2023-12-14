@@ -45,12 +45,12 @@ jobs:
         run: |
           date -u +%Y%m%d-T%H%M%S > TAG
           regula run  . | tee ./compliance-bootstrap-$(cat TAG).json
+          ls -lart
 
       - name: RunRegulaCompliance
         uses: fugue/regula-action@v3.2.1
         with:
           input_path: 4-projects
-          rego_paths: ../rego
       - run: |
           ${{ steps.RunRegulaCompliance.outputs.stdout}} > abc.txt
           ls -lart
