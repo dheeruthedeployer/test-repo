@@ -3,12 +3,10 @@ name: '0-bootstrap'
 on:
   push:
     branches:
-      - main
+      - rego
   pull_request:
     branches:
       - main
-    paths:
-      - 0-bootstrap/**
   workflow_call:
 
 env:
@@ -75,7 +73,7 @@ jobs:
 
   tflint:
     name: "tflint"
-    runs-on: INSERT_RUNNER_LABEL
+    runs-on: cldcvr-pvt-runner-aws
     defaults:
       run:
         working-directory: 0-bootstrap/
