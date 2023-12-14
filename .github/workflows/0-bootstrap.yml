@@ -22,7 +22,7 @@ jobs:
   terraform:
     needs: [terraform-versioncheck,tflint]
     name: "terraform plan and IAC scan"
-    runs-on: cldcvr-pvt-runner-aws
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: 0-bootstrap/
@@ -73,7 +73,7 @@ jobs:
 
   tflint:
     name: "tflint"
-    runs-on: cldcvr-pvt-runner-aws
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: 0-bootstrap/
@@ -96,7 +96,7 @@ jobs:
       run: tflint -f compact
   terraform-versioncheck:
     name: 'terraform version check'
-    runs-on: cldcvr-pvt-runner-aws
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: 0-bootstrap/
