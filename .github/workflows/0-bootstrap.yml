@@ -1,9 +1,6 @@
 name: '0-bootstrap'
 
 on:
-  push:
-    branches:
-      - rego
   pull_request:
     branches:
       - main
@@ -49,12 +46,14 @@ jobs:
           date -u +%Y%m%d-T%H%M%S > TAG
           regula run  . | tee ./compliance-bootstrap-$(cat TAG).json
 
-      - name: Run Regula Compliance
+      - name: RunRegulaCompliance
         uses: fugue/regula-action@v3.2.1
         with:
           input_path: 4-projects
       - run: |
+          ${{ steps.RunRegulaCompliance.outputs}} > abc.txt
           ls -lart
+          cat abc.txt
       - name: Trigger build
         run: |
           cd ${{ github.workspace}}/build
