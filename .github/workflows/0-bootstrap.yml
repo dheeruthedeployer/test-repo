@@ -52,10 +52,16 @@ jobs:
         with:
           input_path: 4-projects
         id: RunRegulaCompliance
-      - run: |
-          echo ${{ steps.RunRegulaCompliance.outputs.out }} > abc.txt
-          ls -lart
-          cat abc.txt
+      - uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GH_TOKEN}}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '👋 Testing comments'
+            })
           
       - name: Trigger build
         run: |
