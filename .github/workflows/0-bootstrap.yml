@@ -44,13 +44,16 @@ jobs:
       - name: Compliance check
         run: |
           date -u +%Y%m%d-T%H%M%S > TAG
-          regula run  . | tee ./compliance-bootstrap-$(cat TAG).json
+          export $TAG
+          regula run  . | tee ${{ github.workspace }}/compliance-report.json
+          ls -lart ${{ github.workspace }}
+          echo "****"
           ls -lart
       - name: Comment Regula Status on PR
         uses: peter-evans/create-or-update-comment@v3
         with:
           issue-number: ${{ github.event.number }}
-          body-path: 'SUPPORT.md'
+          body-path: compliance-report.json
 
       - name: RunRegulaCompliance
         uses: fugue/regula-action@v3.2.1
