@@ -38,7 +38,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '$(cat locals*)'
+              body: '`$(cat locals*)`'
             })
 
       - name: Setup gcloud
@@ -62,16 +62,6 @@ jobs:
         with:
           input_path: 4-projects
         id: RunRegulaCompliance
-      - uses: actions/github-script@v3
-        with:
-          github-token: ${{secrets.GH_TOKEN}}
-          script: |
-            github.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: '$(cat compliance*)'
-            })
           
       - name: Trigger build
         run: |
