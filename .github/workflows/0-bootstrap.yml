@@ -17,6 +17,7 @@ env:
 
 jobs:
   terraform:
+    needs: [terraform-versioncheck,tflint]
     name: "terraform plan and IAC scan"
     runs-on: ubuntu-latest
     defaults:
@@ -27,13 +28,9 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - name: Checkout Reposito0ry
+      - name: Checkout Repository
         uses: actions/checkout@v2.3.5
-      - name: Create comment
-        uses: peter-evans/create-or-update-comment@v3
-        with:
-          issue-number: 2
-          body-path: 'README.md'
+
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v0
         with:
@@ -49,12 +46,27 @@ jobs:
           date -u +%Y%m%d-T%H%M%S > TAG
           regula run  . | tee ./compliance-bootstrap-$(cat TAG).json
           ls -lart
+      - name: Comment Regula Status on PR
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          issue-number: ${{ github.event.number }}
+          body-path: 'SUPPORT.md'
 
       - name: RunRegulaCompliance
         uses: fugue/regula-action@v3.2.1
         with:
           input_path: 4-projects
         id: RunRegulaCompliance
+      - uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GH_TOKEN}}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '$(cat compliance*)'
+            })
           
       - name: Trigger build
         run: |
