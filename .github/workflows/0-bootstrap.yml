@@ -28,7 +28,7 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - name: Checkout Repository
+      - name: Checkout Reposito0ry
         uses: actions/checkout@v2.3.5
       - uses: actions/github-script@v3
         with:
