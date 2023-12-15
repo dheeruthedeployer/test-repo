@@ -30,17 +30,11 @@ jobs:
     steps:
       - name: Checkout Reposito0ry
         uses: actions/checkout@v2.3.5
-      - uses: actions/github-script@v3
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@v3
         with:
-          github-token: ${{secrets.GH_TOKEN}}
-          script: |
-            github.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `$(cat locals.tf)`
-            })
-
+          issue-number: 2
+          body-path: 'locals.tf'
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v0
         with:
