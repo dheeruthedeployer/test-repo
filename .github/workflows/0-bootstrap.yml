@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: 0-bootstrap/
+        working-directory: /
     permissions:
       pull-requests: 'write'
       contents: read
@@ -44,11 +44,7 @@ jobs:
       - name: Compliance check
         run: |
           date -u +%Y%m%d-T%H%M%S > TAG
-          export $TAG
           regula run  . | tee ${{ github.workspace }}/compliance-report.json
-          ls -lart ${{ github.workspace }}
-          echo "****"
-          ls -lart
       - name: Comment Regula Status on PR
         uses: peter-evans/create-or-update-comment@v3
         with:
