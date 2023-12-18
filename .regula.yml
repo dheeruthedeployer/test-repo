@@ -2,7 +2,7 @@ environment-id: ""
 exclude: []
 format: json
 include:
-- rules
+- rego
 input-type:
 - auto
 inputs: []
