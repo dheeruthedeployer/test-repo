@@ -36,6 +36,7 @@ jobs:
           wget -q https://github.com/fugue/regula/releases/download/v2.6.1/regula_2.6.1_Linux_x86_64.tar.gz
           tar -xf regula_2.6.1_Linux_x86_64.tar.gz
           mv regula /usr/local/bin 
+          
       - name: Compliance check
         run: |
           date -u +%Y%m%d-T%H%M%S > TAG
