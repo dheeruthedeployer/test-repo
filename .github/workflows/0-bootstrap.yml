@@ -39,7 +39,6 @@ jobs:
           mv regula /usr/local/bin 
       - name: Compliance check
         run: |
-          date -u +%Y%m%d-T%H%M%S > TAG
           regula run  . | tee ${{ github.workspace }}/compliance-report.json
       - name: Comment Regula Status on PR
         uses: peter-evans/create-or-update-comment@v3
