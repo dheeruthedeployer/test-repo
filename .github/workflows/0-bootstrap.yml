@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: 4-projects/
+        working-directory: ${{ github.workspace }}/
     permissions:
       pull-requests: 'write'
       contents: read
@@ -48,7 +48,7 @@ jobs:
       - name: RunRegulaCompliance
         uses: fugue/regula-action@v3.2.1
         with:
-          input_path: 4-projects
+          input_path: 4-projects/
         id: RunRegulaCompliance
       - uses: actions/github-script@v3
         with:
