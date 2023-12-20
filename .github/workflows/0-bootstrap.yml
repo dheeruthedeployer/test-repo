@@ -66,7 +66,7 @@ jobs:
         run: |
           regula run  . -f json | tee ${{ github.workspace }}/compliance-report.json
           ls -lart
-          if [ ! -s "filename" ]; then echo "Regula scan not able to process, reason: Missing terraform configs." >> ${{ github.workspace }}/compliance-report.json ; fi
+          if [ ! -s "${{ github.workspace }}/compliance-report.json" ]; then echo "Regula scan not able to process, reason: Missing terraform configs." >> ${{ github.workspace }}/compliance-report.json ; fi
 
       - name: Comment Regula Status on PR
         uses: peter-evans/create-or-update-comment@v3
