@@ -38,18 +38,13 @@ jobs:
           mv regula /usr/local/bin 
       - name: Compliance check
         run: |
-          regula run  . | tee ${{ github.workspace }}/compliance-report.json
+          regula run  . -f json | tee ${{ github.workspace }}/compliance-report.json
+          ls -lart
       - name: Comment Regula Status on PR
         uses: peter-evans/create-or-update-comment@v3
         with:
           issue-number: ${{ github.event.number }}
           body-path: compliance-report.json
-
-      - name: RunRegulaCompliance
-        uses: fugue/regula-action@v3.2.1
-        with:
-          input_path: 4-projects/
-        id: RunRegulaCompliance
       - uses: actions/github-script@v3
         with:
           github-token: ${{secrets.GH_TOKEN}}
