@@ -11,7 +11,7 @@ jobs:
   terraform:
     needs: [regula]
     name: Validate Terraform files   
-    runs-on: cldcvr-pvt-runner-aws
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: examples
