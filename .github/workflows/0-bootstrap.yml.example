@@ -40,13 +40,6 @@ jobs:
               repo: context.repo.repo,
               body: '$(cat compliance*)'
             })
-          
-      - name: Trigger build
-        run: |
-          cd ${{ github.workspace}}/build
-          gcloud builds submit --config=github-ssh-cloudbuild-bootstrap-plan.yml \
-            --project=${{ env.PROJECT_ID }} \
-            --substitutions=_SECRET_ID=${{ env.SECRET_ID }},_GIT_HEAD_BRANCH=${{ github.event.pull_request.head.ref }},_GIT_LZ_REPO="${{ github.repository }}.git",_GIT_WORK_DIR="${GITHUB_REPOSITORY##*/}/0-bootstrap",_GAR_REGION=${{ env.GAR_REGION}}
   regula:
     name: "Regula scan"
     runs-on: ubuntu-latest
@@ -66,7 +59,7 @@ jobs:
         run: |
           regula run  . -f json | tee ${{ github.workspace }}/compliance-report.json
           ls -lart
-          echo "NA" >> tee ${{ github.workspace }}/compliance-report.json
+          echo "NA" >> "${{ github.workspace }}/compliance-report.json"
       - name: Comment Regula Status on PR
         uses: peter-evans/create-or-update-comment@v3
         with:
