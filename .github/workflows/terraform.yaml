@@ -32,7 +32,7 @@ jobs:
           workload_identity_provider: projects/${{ secrets.GCP_PROJECT_ID }}/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions-provider
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
           create_credentials_file: true
-      - name: Setup Terraform
+      - name: Setup Terraforms
         uses: hashicorp/setup-terraform@v1.3.2
       - name: Setup Nodejs
         uses: actions/setup-node@v1  
