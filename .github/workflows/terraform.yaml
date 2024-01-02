@@ -1,0 +1,112 @@
+---
+name: "Validate Terraform files"
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_call:
+  
+jobs:
+  terraform:
+    needs: [regula]
+    name: Validate Terraform files   
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: examples
+    permissions:
+      pull-requests: 'write'
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2.3.5
+        with:
+          fetch-depth: 1
+      - id: auth
+        name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v0.4.0
+        with:
+          token_format: access_token
+          workload_identity_provider: projects/${{ secrets.GCP_PROJECT_ID }}/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions-provider
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          create_credentials_file: true
+      - name: Setup Terraforms
+        uses: hashicorp/setup-terraform@v1.3.2
+      - name: Setup Nodejs
+        uses: actions/setup-node@v1  
+      - name: Run `terraform fmt`
+        id: fmt
+        run: terraform fmt -diff -check -no-color -recursive
+      - name: Run `terraform init`
+        id: init
+        run: terraform init
+      - name: Run `terraform validate`
+        id: validate
+        if: github.event_name == 'pull_request'
+        run: terraform validate -no-color     
+      - name: Run `terraform plan`
+        id: plan
+        if: github.event_name == 'pull_request'
+        run: terraform plan -no-color -out=terraform-plan.json
+        timeout-minutes: 10
+      - name: Update Pull Request
+        uses: actions/github-script@0.9.0
+        if: github.event_name == 'pull_request'
+        env:
+          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+            #### Terraform Validation 🤖\`${{ steps.validate.outputs.stdout }}\`
+
+            <details><summary>Show Plan</summary>
+
+            \`\`\`\n
+            ${process.env.PLAN}
+            \`\`\`
+
+            </details>
+
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+      - name: Terraform Plan Status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
+
+  regula:
+    name: "Regula scan"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}/
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2.3.5
+      - name: configure Regula
+        run: |
+          wget -q https://github.com/fugue/regula/releases/download/v2.6.1/regula_2.6.1_Linux_x86_64.tar.gz 
+          tar -xf regula_2.6.1_Linux_x86_64.tar.gz
+          mv regula /usr/local/bin 
+      - name: Compliance check
+        run: |
+          regula run  . -f json | tee ${{ github.workspace }}/compliance-report.json
+          ls -lart
+          echo "NA" >> "${{ github.workspace }}/compliance-report.json"
+      - name: Comment Regula Status on PR
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          issue-number: ${{ github.event.number }}
+          body-path: compliance-report.json
